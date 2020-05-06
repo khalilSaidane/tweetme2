@@ -1,6 +1,7 @@
 from django.db import models
 import random
 
+
 class Tweet(models.Model):
     content = models.TextField(blank=True)
     image = models.FileField(upload_to='images/', blank=True, null=True)
@@ -9,5 +10,8 @@ class Tweet(models.Model):
         return {
             'id': self.id,
             'content': self.content,
-            'likes': random.randint(0,100)
+            'likes': random.randint(0, 100)
         }
+
+    class Meta:
+        ordering = ['-id']
