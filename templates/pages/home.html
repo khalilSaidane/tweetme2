@@ -9,7 +9,7 @@
 
     <div class="row mb-3">
         <div class="col-md-4 mx-auto col-10">
-            <form action="/create-tweet" class="form" method="post">
+            <form id="tweet-create-form" action="/create-tweet" class="form" method="post">
                 {% csrf_token %}
                 <input type="hidden" value="/" name="next">
                 <textarea class="form-control" name="content" placeholder="Your tweet"></textarea>
@@ -24,14 +24,29 @@
 
     <script>
 
-        const tweetsElement = document.getElementById('tweets');
-        tweetsElement.innerHTML = 'Loading ...';
+        const tweetsEl = document.getElementById('tweets');
+        tweetsEl.innerHTML = 'Loading ...';
 
-
-        const xhr = new XMLHttpRequest();
-        const method = 'GET';
-        const url = '/tweets';
-        const responseType = 'json';
+        const loadTweets = function (tweetsElement) {
+            const xhr = new XMLHttpRequest();
+            const method = 'GET';
+            const url = '/tweets';
+            const responseType = 'json';
+            xhr.responseType = responseType;
+            xhr.open(method, url);
+            xhr.onload = function () {
+                const response = xhr.response;
+                var listedItems = response.response;
+                var finalTweetStr = "";
+                for (var i = 0; i < listedItems.length; i++) {
+                    tweetObj = listedItems[i];
+                    finalTweetStr += formattingTweetElement(tweetObj)
+                }
+                tweetsElement.innerHTML = finalTweetStr
+            };
+            xhr.send()
+        };
+        loadTweets(tweetsEl);
 
         function likeBtn(tweet) {
             return "<button class='btn btn-primary mb-2' onclick=handleLike(" +
@@ -52,19 +67,25 @@
                 "</div>"
         }
 
-        xhr.responseType = responseType;
-        xhr.open(method, url);
-        xhr.onload = function () {
-            const response = xhr.response;
-            var listedItems = response.response
-            var finalTweetStr = ""
-            for (var i = 0; i < listedItems.length; i++) {
-                tweetObj = listedItems[i]
-                finalTweetStr += formattingTweetElement(tweetObj)
+        const tweetCreateFormEl = document.getElementById('tweet-create-form')
+        tweetCreateFormEl.addEventListener("submit", function (event) {
+            event.preventDefault()
+            const myForm = event.target
+            const myFormData = new FormData(myForm)
+            const url = myForm.getAttribute('Action')
+            const method = myForm.getAttribute('method')
+
+            const xhr = new XMLHttpRequest();
+            xhr.open(method, url);
+            xhr.onload = function () {
+                const response = xhr.response
+                const tweetsEl = document.getElementById('tweets');
+                loadTweets(tweetsEl);
             }
-            tweetsElement.innerHTML = finalTweetStr
-        }
-        xhr.send()
+            xhr.send(myFormData)
+        })
+
+
     </script>
 
 {% endblock content %}

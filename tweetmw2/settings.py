@@ -25,7 +25,7 @@ SECRET_KEY = '@tc66#&12-eutkj&3lj64wr9)2hq)pfvm!!1hp7373w&n+oe1t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','.khalil.com']
 
 
 # Application definition
