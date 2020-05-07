@@ -49,7 +49,7 @@
             xhr.open(method, url);
             xhr.onload = function () {
                 const response = xhr.response;
-                var listedItems = response.response;
+                var listedItems = response;
                 var finalTweetStr = "";
                 for (var i = 0; i < listedItems.length; i++) {
                     tweetObj = listedItems[i];
@@ -112,7 +112,11 @@
                     } else {
                         alert('An error occurred please try again')
                     }
-                } else if (xhr.status == 500) {
+                } else if (xhr.status == 403) {
+                    alert('You must login')
+                    window.location.href = '/login'
+                }
+                else if (xhr.status == 500) {
                     alert('Server error please try again')
                 }
             }
