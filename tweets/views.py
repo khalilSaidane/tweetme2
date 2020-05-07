@@ -34,14 +34,23 @@ def tweet_list_view(request, *args, **kwargs):
 
 
 def tweet_create_view(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        request.user = None
+        if request.is_ajax():
+            return JsonResponse({}, status=401)
+        return redirect(settings.LOGIN_URL)
     form = TweetForm(request.POST or None)
     next_url = request.POST.get('next') or None
     if form.is_valid():
         obj = form.save(commit=False)
+        obj.user = request.user
         obj.save()
         form = TweetForm()
         if request.is_ajax():
             return JsonResponse(obj.serialize(), status=201)
         if next_url != None and is_safe_url(next_url, ALLOWED_HOSTS):
             return redirect(next_url)
+    if form.errors:
+        if request.is_ajax():
+            return JsonResponse(form.errors, status=400)
     return render(request, 'components/form.html', context={'form': form})
